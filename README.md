@@ -9,6 +9,7 @@ This is a thin "meta" repository: all kernel code lives in submodules under [`ke
 | Library | Path | Upstream | License | Tracked branch |
 |---|---|---|---|---|
 | [DeepGEMM](kernels/DeepGEMM) | `kernels/DeepGEMM` | [deepseek-ai/DeepGEMM](https://github.com/deepseek-ai/DeepGEMM) | MIT | `main` |
+| [CUTLASS](kernels/cutlass) | `kernels/cutlass` | [NVIDIA/cutlass](https://github.com/NVIDIA/cutlass) | BSD-3-Clause | `main` |
 
 ### DeepGEMM
 
@@ -24,6 +25,18 @@ It leverages concepts from CUTLASS/CuTe but avoids heavy reliance on their templ
 Requirements: NVIDIA SM90 (Hopper) or SM100 (Blackwell) GPU, CUDA Toolkit 12.9+, PyTorch 2.3+.
 
 The submodule points to the [byrzhm/DeepGEMM](https://github.com/byrzhm/DeepGEMM) fork, which tracks upstream `main` (currently at the same commit, `5081f85`). See [kernels/DeepGEMM/README.md](kernels/DeepGEMM/README.md) for full details.
+
+### CUTLASS
+
+NVIDIA's CUDA templates for high-performance GEMM and related computations — the reference implementation of hierarchical kernel decomposition (CTA → warp → instruction level), data movement (TMA, async copy) and epilogue fusion, built from reusable, modular software components.
+
+- **C++ templates** — since 2017, with extensive data-type coverage: FP64/FP32/TF32/FP16/BF16, FP8 (e4m3/e5m2), block-scaled NVFP4 and MXFP4/MXFP6/MXFP8, narrow integers and 1-bit binary types, across Volta, Turing, Ampere, Ada, Hopper and Blackwell
+- **CUTLASS DSLs (CuTe DSL)** — Python-native kernel authoring on the same core CUTLASS/CuTe concepts: much faster compile times, no C++ glue code, and metaprogramming without deep C++ expertise
+- Pinned at 4.8.1 (Oct. 2026)
+
+The submodule points to the [byrzhm/cutlass](https://github.com/byrzhm/cutlass) fork, which tracks upstream `main` (currently at the same commit, `b2f249ac`). See [kernels/cutlass/README.md](kernels/cutlass/README.md) for full details.
+
+> **Note:** DeepGEMM itself depends on CUTLASS through its own nested submodule (`kernels/DeepGEMM/third-party/cutlass`), so a fully recursive clone fetches two independent copies of CUTLASS.
 
 ## Usage
 

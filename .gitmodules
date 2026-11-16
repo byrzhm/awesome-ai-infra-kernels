@@ -1,3 +1,6 @@
 [submodule "kernels/DeepGEMM"]
 	path = kernels/DeepGEMM
 	url = git@github.com:byrzhm/DeepGEMM.git
+[submodule "kernels/cutlass"]
+	path = kernels/cutlass
+	url = git@github.com:byrzhm/cutlass.git
