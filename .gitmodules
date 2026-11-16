@@ -1,0 +1,3 @@
+[submodule "kernels/DeepGEMM"]
+	path = kernels/DeepGEMM
+	url = git@github.com:byrzhm/DeepGEMM.git
