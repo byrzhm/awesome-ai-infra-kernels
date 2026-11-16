@@ -13,6 +13,7 @@ This is a thin "meta" repository: all kernel code lives in submodules under [`ke
 | [DeepEP](kernels/DeepEP) | `kernels/DeepEP` | [deepseek-ai/DeepEP](https://github.com/deepseek-ai/DeepEP) | MIT | `main` |
 | [MoonEP](kernels/MoonEP) | `kernels/MoonEP` | [MoonshotAI/MoonEP](https://github.com/MoonshotAI/MoonEP) | MIT | `master` |
 | [FlashAttention](kernels/flash-attention) | `kernels/flash-attention` | [dao-AILAB/flash-attention](https://github.com/dao-AILAB/flash-attention) | BSD-3-Clause | `main` |
+| [TransformerEngine](kernels/TransformerEngine) | `kernels/TransformerEngine` | [NVIDIA/TransformerEngine](https://github.com/NVIDIA/TransformerEngine) | Apache-2.0 | `main` |
 
 ### DeepGEMM
 
@@ -39,7 +40,7 @@ NVIDIA's CUDA templates for high-performance GEMM and related computations — t
 
 The submodule points to the [byrzhm/cutlass](https://github.com/byrzhm/cutlass) fork, which tracks upstream `main` (currently at the same commit, `b2f249ac`). See [kernels/cutlass/README.md](kernels/cutlass/README.md) for full details.
 
-> **Note:** DeepGEMM and FlashAttention both vendor CUTLASS through their own nested submodules (`kernels/DeepGEMM/third-party/cutlass`, `kernels/flash-attention/csrc/cutlass`), so a fully recursive clone fetches multiple independent copies of CUTLASS.
+> **Note:** DeepGEMM, FlashAttention and TransformerEngine all vendor CUTLASS through their own nested submodules (`kernels/DeepGEMM/third-party/cutlass`, `kernels/flash-attention/csrc/cutlass`, `kernels/TransformerEngine/3rdparty/cutlass`), so a fully recursive clone fetches multiple independent copies of CUTLASS.
 
 ### DeepEP
 
@@ -72,6 +73,17 @@ The official implementation of FlashAttention — fast and memory-efficient exac
 - **Earlier generations kept in-tree** — FA2 (CUDA C++, `csrc/`) and FA3 (Hopper-optimized, `hopper/`)
 
 The submodule points to the [byrzhm/flash-attention](https://github.com/byrzhm/flash-attention) fork, which tracks upstream `main` (currently at the same commit, `2dd8952`). It has its own nested submodules — CUTLASS under `csrc/cutlass` plus ROCm's `composable_kernel` and `aiter` for the HIP backend. See [kernels/flash-attention/README.md](kernels/flash-attention/README.md) for full details.
+
+### TransformerEngine
+
+NVIDIA's library for accelerating Transformer model training on NVIDIA GPUs — optimized building blocks and fused kernels combined with automatic mixed-precision-style APIs for PyTorch and JAX, so low-precision training can be adopted without rewriting a training stack. TE manages the scaling factors, amax histories and quantization metadata required by low-precision recipes.
+
+- **Low-precision training** — FP8 on Hopper, Ada, Blackwell and Rubin; MXFP8 and NVFP4 on Blackwell; FP16/BF16 optimizations from Ampere onward
+- **Fused modules** — attention, linear layers, normalization, quantization, and fused Transformer and MoE building blocks
+- **Distributed** — tensor, sequence, context and expert parallelism, with communication overlap
+- **Architecture** — PyTorch and JAX frontends over a framework-independent common layer (CUDA kernels, public C API, dispatch)
+
+The submodule points to the [byrzhm/TransformerEngine](https://github.com/byrzhm/TransformerEngine) fork, which tracks upstream `main` (currently at the same commit, `4f5c08e`). Nested submodules: CUTLASS, googletest and nccl-extensions under `3rdparty/`. See [kernels/TransformerEngine/README.rst](kernels/TransformerEngine/README.rst) for full details.
 
 ## Usage
 

@@ -13,3 +13,6 @@
 [submodule "kernels/flash-attention"]
 	path = kernels/flash-attention
 	url = git@github.com:byrzhm/flash-attention.git
+[submodule "kernels/TransformerEngine"]
+	path = kernels/TransformerEngine
+	url = git@github.com:byrzhm/TransformerEngine.git
