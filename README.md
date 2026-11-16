@@ -10,6 +10,9 @@ This is a thin "meta" repository: all kernel code lives in submodules under [`ke
 |---|---|---|---|---|
 | [DeepGEMM](kernels/DeepGEMM) | `kernels/DeepGEMM` | [deepseek-ai/DeepGEMM](https://github.com/deepseek-ai/DeepGEMM) | MIT | `main` |
 | [CUTLASS](kernels/cutlass) | `kernels/cutlass` | [NVIDIA/cutlass](https://github.com/NVIDIA/cutlass) | BSD-3-Clause | `main` |
+| [DeepEP](kernels/DeepEP) | `kernels/DeepEP` | [deepseek-ai/DeepEP](https://github.com/deepseek-ai/DeepEP) | MIT | `main` |
+| [MoonEP](kernels/MoonEP) | `kernels/MoonEP` | [MoonshotAI/MoonEP](https://github.com/MoonshotAI/MoonEP) | MIT | `master` |
+| [FlashAttention](kernels/flash-attention) | `kernels/flash-attention` | [dao-AILAB/flash-attention](https://github.com/dao-AILAB/flash-attention) | BSD-3-Clause | `main` |
 
 ### DeepGEMM
 
@@ -36,7 +39,39 @@ NVIDIA's CUDA templates for high-performance GEMM and related computations — t
 
 The submodule points to the [byrzhm/cutlass](https://github.com/byrzhm/cutlass) fork, which tracks upstream `main` (currently at the same commit, `b2f249ac`). See [kernels/cutlass/README.md](kernels/cutlass/README.md) for full details.
 
-> **Note:** DeepGEMM itself depends on CUTLASS through its own nested submodule (`kernels/DeepGEMM/third-party/cutlass`), so a fully recursive clone fetches two independent copies of CUTLASS.
+> **Note:** DeepGEMM and FlashAttention both vendor CUTLASS through their own nested submodules (`kernels/DeepGEMM/third-party/cutlass`, `kernels/flash-attention/csrc/cutlass`), so a fully recursive clone fetches multiple independent copies of CUTLASS.
+
+### DeepEP
+
+DeepSeek's high-performance communication library for machine learning training and inference:
+
+- **Expert parallelism** — high-throughput and low-latency all-to-all GPU kernels for MoE dispatch and combine (FP8 dispatch supported), unified under the `EPBuffer` interface since V2
+- **Redundant-expert exchange** — NVLink weight prefetch (`lb_prefetch_weights`) and gradient reduction (`lb_reduce_grads`) for dynamic redundant experts
+- **Experimental primitives** — pipeline parallelism (PP), context/data parallelism bucket collectives (CP/DP), and remote memory access (Engram)
+- Communication kernels are JIT-compiled at runtime via DeepJIT; NCCL Gin backend (NVSHMEM removed as a dependency in V2.5)
+
+The submodule points to the [byrzhm/DeepEP](https://github.com/byrzhm/DeepEP) fork, which tracks upstream `main` (currently at the same commit, `f6aa38f`). See [kernels/DeepEP/README.md](kernels/DeepEP/README.md) for full details.
+
+### MoonEP
+
+Moonshot AI's expert-parallelism communication library that keeps token loads perfectly balanced across ranks via dynamic redundant experts:
+
+- **Perfect balance** — every rank receives exactly `S × K` tokens no matter how skewed the routing is: a small set of redundant experts is planned online from the current router outputs and prefetched before expert computation, with gradients reduced back to home ranks in backward
+- **Zero copy and static shapes** — fused permute/unpermute: tokens are sent directly to their expert-grouped positions on remote ranks, buffer views are handed to the computation, and the fixed `S × K` buffer eliminates per-layer MoE host synchronization
+- **Online planning** — a near-optimal GPU planning kernel with negligible overhead
+
+Benchmarks on H20 (EP=8) show flat communication time under router imbalance where DeepEP v2's latency — set by the hottest rank — degrades, and no OOM from activation-shape fragmentation during end-to-end training. The redundant-expert approach pairs with DeepEP's `lb_prefetch_weights` / `lb_reduce_grads` primitives.
+
+The submodule points to the [byrzhm/MoonEP](https://github.com/byrzhm/MoonEP) fork, which tracks upstream `master` (currently at the same commit, `d86fda4`). See [kernels/MoonEP/README.md](kernels/MoonEP/README.md) for full details.
+
+### FlashAttention
+
+The official implementation of FlashAttention — fast and memory-efficient exact attention with IO-awareness (Tri Dao et al.):
+
+- **FlashAttention-4** (active development, `flash_attn/cute/`) — written in Python with CuTe DSL and JIT-compiled to PTX/CUBIN at runtime; targets Hopper (SM90) and Blackwell (SM100/SM110); varlen, causal and sliding-window masks, softcap, user-defined `score_mod`/`mask_mod`, block sparsity, paged KV, GQA/MQA, split-KV with combine
+- **Earlier generations kept in-tree** — FA2 (CUDA C++, `csrc/`) and FA3 (Hopper-optimized, `hopper/`)
+
+The submodule points to the [byrzhm/flash-attention](https://github.com/byrzhm/flash-attention) fork, which tracks upstream `main` (currently at the same commit, `2dd8952`). It has its own nested submodules — CUTLASS under `csrc/cutlass` plus ROCm's `composable_kernel` and `aiter` for the HIP backend. See [kernels/flash-attention/README.md](kernels/flash-attention/README.md) for full details.
 
 ## Usage
 

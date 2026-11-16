@@ -16,14 +16,17 @@ Each library under `kernels/` is an independent repository with its own history,
 ├── LICENSE            # MIT — covers this repo only, not submodules
 ├── .gitmodules        # submodule registry
 └── kernels/
-    ├── DeepGEMM/      # submodule → byrzhm/DeepGEMM (fork of deepseek-ai/DeepGEMM)
-    └── cutlass/       # submodule → byrzhm/cutlass (fork of NVIDIA/cutlass)
+    ├── DeepGEMM/        # submodule → byrzhm/DeepGEMM (fork of deepseek-ai/DeepGEMM)
+    ├── cutlass/         # submodule → byrzhm/cutlass (fork of NVIDIA/cutlass)
+    ├── DeepEP/          # submodule → byrzhm/DeepEP (fork of deepseek-ai/DeepEP)
+    ├── MoonEP/          # submodule → byrzhm/MoonEP (fork of MoonshotAI/MoonEP)
+    └── flash-attention/ # submodule → byrzhm/flash-attention (fork of dao-AILAB/flash-attention)
 ```
 
 ## Working with submodules
 
 - After cloning or pulling the root repo, always run `git submodule update --init --recursive` before doing anything else.
-- Some libraries have their own nested submodules (e.g. DeepGEMM vendors CUTLASS and DeepJIT under `kernels/DeepGEMM/third-party/`); the recursive update above handles them too.
+- Some libraries have their own nested submodules (DeepGEMM and DeepEP vendor DeepJIT; DeepGEMM and flash-attention vendor CUTLASS; flash-attention also vendors ROCm's `composable_kernel` and `aiter`); the recursive update above handles them too.
 - The root repo records only a gitlink (pinned commit) per library. To update a library: check out the target commit inside `kernels/<Lib>`, then `git add kernels/<Lib>` from the root and commit.
 - Files inside `kernels/<Lib>` belong to that library's own repository. Do not modify them as part of a root-repo change unless the user explicitly asks; such changes belong in the library's own repository (the fork), not here.
 - Never commit build artifacts or generated files.

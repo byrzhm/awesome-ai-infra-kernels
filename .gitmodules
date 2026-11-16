@@ -4,3 +4,12 @@
 [submodule "kernels/cutlass"]
 	path = kernels/cutlass
 	url = git@github.com:byrzhm/cutlass.git
+[submodule "kernels/DeepEP"]
+	path = kernels/DeepEP
+	url = git@github.com:byrzhm/DeepEP.git
+[submodule "kernels/MoonEP"]
+	path = kernels/MoonEP
+	url = git@github.com:byrzhm/MoonEP
+[submodule "kernels/flash-attention"]
+	path = kernels/flash-attention
+	url = git@github.com:byrzhm/flash-attention.git
